@@ -97,13 +97,8 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
-        $list = Event::get();
-
-        if($list){
-            return $list;
-        }else{
-            throw new \Exception('implement in coding task 1');
-        }
+        $list = Event::with('workShops')->get();
+        return $list;
     }
 
 
@@ -182,6 +177,18 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+        $futureEvents = Event::with('workShops')
+                                ->select(
+                                    'events.id',
+                                    'events.name',
+                                    'events.created_at',
+                                    'events.updated_at'
+                                )
+                                ->join('workshops AS ws', 'ws.event_id', 'events.id')
+                                ->where('ws.start', ">", date('Y-m-d'))
+                                ->groupBy('ws.event_id')
+                                ->get();
+        return $futureEvents;
+        // throw new \Exception('implement in coding task 2');
     }
 }
